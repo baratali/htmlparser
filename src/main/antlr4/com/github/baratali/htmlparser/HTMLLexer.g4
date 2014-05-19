@@ -28,6 +28,14 @@
 
 lexer grammar  HTMLLexer;
 
+TAG_CUSTOM: '@' [a-zA-Z0-9]+;
+START_JAVADOC: '/**';
+START_MULTILINE_COMMENT: '/*';
+END_MULTILINE_COMMENT: '*/';
+START_SINGLELINE_COMMENT: '//';
+LEADING_STAR: {getCharPositionInLine() == 0}? '*';
+NEW_LINE: '\n';
+
 HTML_COMMENT    
     : '<!--' .*? '-->'
     ;
@@ -68,7 +76,7 @@ TAG_OPEN
             
 HTML_TEXT
     : ~'<'+
-    ;   
+    ;
        
 //
 // tag declarations

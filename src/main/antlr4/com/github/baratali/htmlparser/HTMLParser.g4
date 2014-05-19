@@ -30,8 +30,16 @@ parser grammar HTMLParser;
 
 options { tokenVocab=HTMLLexer; }
 
+start: SEA_WS? (javadoc | singleLineComment| multiLineComment)* SEA_WS?;
+javadoc  : START_JAVADOC SEA_WS? javadocLine*? SEA_WS? END_MULTILINE_COMMENT;
+javadocLine: SEA_WS? LEADING_STAR SEA_WS? (tag | htmlChardata | htmlDocument )*;
+tag: TAG_CUSTOM;
+
+singleLineComment: START_SINGLELINE_COMMENT .*? NEW_LINE;
+multiLineComment: START_MULTILINE_COMMENT .*? END_MULTILINE_COMMENT;
+
 htmlDocument    
-    : SEA_WS? xml? SEA_WS? dtd? SEA_WS? scriptlet*  SEA_WS? htmlElements*
+    : SEA_WS? xml? SEA_WS? dtd? SEA_WS? scriptlet*  SEA_WS? htmlElements+
     ;
 
 htmlElements

@@ -13,6 +13,6 @@ public class Main {
 
 	public static void runTestRigGui(String fileName) throws Exception {
 		TestRig.main(new String[] { "com.github.baratali.htmlparser.HTML",
-				"htmlDocument", "-gui", resourcesDirectory + fileName });
+				"start", "-tokens", "-gui", resourcesDirectory + fileName });
 	}
 }

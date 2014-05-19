@@ -1,6 +1,5 @@
 package com.github.baratali.htmlparser;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -11,7 +10,7 @@ import org.junit.Test;
 public class TestHtmlParser {
 
 	@Test
-	public void test() throws IOException {
+	public void test() throws Exception {
 		InputStream in = getInputStream("InputTestHtmlParser.html");
 		// create a CharStream that reads from standard input
 		ANTLRInputStream input = new ANTLRInputStream(in);

@@ -30,16 +30,17 @@ parser grammar HTMLParser;
 
 options { tokenVocab=HTMLLexer; }
 
-start: SEA_WS? (javadoc | singleLineComment| multiLineComment)* SEA_WS?;
-javadoc  : START_JAVADOC SEA_WS? javadocLine*? SEA_WS? END_MULTILINE_COMMENT;
-javadocLine: SEA_WS? LEADING_STAR SEA_WS? (tag | htmlChardata | htmlDocument )*;
+whiteSpace: (WS | NEW_LINE)+;
+
+start: (javadoc | singleLineComment| multiLineComment| whiteSpace)*;
+javadoc  : START_JAVADOC whiteSpace? (tag | htmlElements | htmlChardata)* whiteSpace? END_MULTILINE_COMMENT;
 tag: TAG_CUSTOM;
 
-singleLineComment: START_SINGLELINE_COMMENT .*? NEW_LINE;
+singleLineComment: START_SINGLELINE_COMMENT .*? NEW_LINE?;
 multiLineComment: START_MULTILINE_COMMENT .*? END_MULTILINE_COMMENT;
 
 htmlDocument    
-    : SEA_WS? xml? SEA_WS? dtd? SEA_WS? scriptlet*  SEA_WS? htmlElements+
+    : whiteSpace? xml? whiteSpace? dtd? whiteSpace? scriptlet*  whiteSpace? htmlElements+
     ;
 
 htmlElements
@@ -47,13 +48,25 @@ htmlElements
     ;
 
 htmlElement     
-    : TAG_OPEN htmlTagName htmlAttribute* TAG_CLOSE htmlContent TAG_OPEN TAG_SLASH htmlTagName TAG_CLOSE
-    | TAG_OPEN htmlTagName htmlAttribute* TAG_SLASH_CLOSE
-    | TAG_OPEN htmlTagName htmlAttribute* TAG_CLOSE
+    : htmlOpenTag htmlContent htmlCloseTag
+    | htmlSingleCloseTag 
+    | htmlOpenTag
     | scriptlet
     | script
     | style
     ;
+    
+htmlOpenTag
+	: TAG_OPEN htmlTagName htmlAttribute* TAG_CLOSE
+	;
+
+htmlCloseTag
+	: TAG_OPEN TAG_SLASH htmlTagName TAG_CLOSE
+	;
+
+htmlSingleCloseTag
+	: TAG_OPEN htmlTagName htmlAttribute* TAG_SLASH_CLOSE
+	;
 
 htmlContent     
     : htmlChardata? ((htmlElement | xhtmlCDATA | htmlComment) htmlChardata?)*
@@ -77,13 +90,12 @@ htmlTagName
     ;
 
 htmlChardata    
-    : HTML_TEXT 
-    | SEA_WS
+    : (HTML_TEXT | WS | NEW_LINE)+ 
     ;
 
 htmlMisc        
     : htmlComment 
-    | SEA_WS
+    | whiteSpace
     ;
 
 htmlComment

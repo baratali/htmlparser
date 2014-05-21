@@ -28,13 +28,16 @@
 
 lexer grammar  HTMLLexer;
 
+@lexer::members {
+	public static final int STARS = 1;
+}
+
 TAG_CUSTOM: '@' [a-zA-Z0-9]+;
-START_JAVADOC: '/**';
+START_SINGLELINE_COMMENT: '//';
 START_MULTILINE_COMMENT: '/*';
 END_MULTILINE_COMMENT: '*/';
-START_SINGLELINE_COMMENT: '//';
-LEADING_STAR: {getCharPositionInLine() == 0}? '*';
-NEW_LINE: '\n';
+//LEADING_STAR: {getCharPositionInLine() == 0}? WS* '*' -> channel(STARS);
+LEADING_STAR: '*' -> channel(STARS);
 
 HTML_COMMENT    
     : '<!--' .*? '-->'
@@ -58,9 +61,13 @@ SCRIPTLET
     | '<%' .*? '%>'
     ;
 
-SEA_WS
-    :  (' '|'\t'|'\r'? '\n')+ 
+WS
+    :  (' '|'\t') 
     ;
+    
+NEW_LINE
+	: '\r'? '\n'
+	;
 
 SCRIPT_OPEN
     : '<script' .*? '>' ->pushMode(SCRIPT)
@@ -75,8 +82,10 @@ TAG_OPEN
     ;
             
 HTML_TEXT
-    : ~'<'+
+    : (~['<'  '/'  '*'])+
     ;
+    
+START_JAVADOC: '/**';
        
 //
 // tag declarations
